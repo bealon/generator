@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>天天掌柜OSS</title>
+#set($header='#parse("newheader.html")')
+#set($save='#if($shiro.hasPermission("'+${moduleRight}+${pathName}+':save"))')
+#set($update='#if($shiro.hasPermission("'+${moduleRight}+${pathName}+':update"))')
+#set($delete='#if($shiro.hasPermission("'+${moduleRight}+${pathName}+':delete"))')
+#set($province= '')
+#set($end='#end')
+#set($fileInit= '')
+$header
+</head>
+<body>
+<div id="oss" class="rightFrame" v-cloak>
+    <div v-show="showList">
+            <div class="panel panel-default  ">
+                <div class="panel-body">
+                    <div class="page-header frame-header">
+	                    <el-form :inline="true" :model="q" class="demo-form-inline">
+	                    	 #foreach($column in $columns)
+		                		 #if(${column.isQuery} == 1 )
+		                		 
+			                		 <el-form-item label="${column.columnComment}">
+									  	#if(${column.textType}=="select")
+									  	
+									  		<el-select v-model="q.${column.attrname}"  >
+										    	<el-option    label="---请选择---"   value=""></el-option>  
+										    	<el-option v-for="(value,key) in ${column.attrname}Arr"  :label="value"  :value="key"></el-option>  
+										    </el-select>
+										#elseif(${column.textType}=="date")
+							                <el-date-picker
+							                  style="width:350px"
+										      v-model="q.${column.attrname}"
+										      type="datetimerange"
+										      align="right"
+										      format="yyyy-MM-dd HH:mm:ss"
+										      range-separator="至"
+										      start-placeholder="开始${column.columnComment}"
+										      end-placeholder="结束${column.columnComment}"  >
+										    </el-date-picker>
+			                		 	#else
+									  		<el-input v-model="q.${column.attrname}" placeholder="${column.columnComment}"></el-input>
+									  	#end
+									</el-form-item>
+		                		 #end
+		                	 #end
+		                            
+							<el-form-item>
+							   	 <el-button type="primary" icon="el-icon-search" @click="query">查询</el-button>
+			                     <el-button icon="el-icon-circle-cross" @click="clear">清除</el-button>
+			                      $save
+			                     <el-button icon="el-icon-plus" @click.stop.prevent="add">新增</el-button>
+			                      $end
+							</el-form-item>
+						</el-form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel panel-default">
+       			<div class="panel-body">
+            		<table id="jqGrid"></table>
+            		<div id="jqGridPager"></div>
+                </div>
+            </div>
+    </div>
+        
+    <div v-show="!showList" class="panel panel-default">
+       <div class="panel-body">
+                <div class="page-header frame-header">
+                    <h3>{{title}}</h3>
+                </div>
+               <el-form   :model="${classname}" :rules="rules" ref="${classname}Form"  class="form-content"  label-width="150px">
+                    <div class="from-header">&nbsp;</div>
+                    #foreach($column in $columns)
+                   		#if($column.columnName != $pk.columnName)
+	                   		 #if(${column.isShow}==1)
+	                   		 
+		                   		 <el-form-item label="${column.columnComment}" prop="${column.attrname}">
+						       		 #if(${column.textType}=="number")
+						       			 <el-input-number :disabled="!editable" v-model="${classname}.${column.attrname}" :min="0"   :max="1000"  placeholder="${column.columnComment}" 
+						       			 style="width:350px"></el-input-number>
+						       		 #elseif(${column.textType}=="select")
+						       		 	#if(${column.attrname}=="province")
+						       		 		#set($province= "1")
+									         <el-select size="small"  :disabled="!editable" v-model="${classname}.${column.attrname}" placeholder="${column.columnComment}"  @change="provChange($event)">  
+						                        <el-option  v-for="item in provinces"  :label="item.name"  :value="item.gbCode"></el-option>  
+						                     </el-select>
+									    #elseif(${column.attrname}=="city")
+						                     <el-select size="small"  :disabled="!editable" v-model="${classname}.${column.attrname}" placeholder="${column.columnComment}" @change="cityChange($event)">  
+						                        <el-option  v-for="item in citys"  :label="item.name"  :value="item.gbCode"></el-option>  
+						                     </el-select>
+									    #elseif(${column.attrname}=="area")
+						                     <el-select size="small"  :disabled="!editable" v-model="${classname}.${column.attrname}" placeholder="${column.columnComment}">  
+						                        <el-option  v-for="item in areas"  :label="item.name"  :value="item.gbCode"></el-option>  
+						                     </el-select>
+						       		 	#else
+								  		<el-select :disabled="!editable" v-model="${classname}.${column.attrname}" placeholder="请选择${column.columnComment}"  
+								  		 style="width: 350px">
+									    	<el-option v-for="(value,key) in ${column.attrname}Arr"  :label="value"  :value="key"></el-option>  
+									    </el-select>
+									    #end
+									 #elseif(${column.textType}=="textarea")
+									   <el-input   :disabled="!editable"  v-model="${classname}.${column.attrname}"  type="textarea"   :rows="2"  placeholder="${column.columnComment}" 
+									      maxlength="${column.length}" style="width: 350px"></el-input>
+						       		 #elseif(${column.textType}=="date")
+						       		 	<el-date-picker :disabled="!editable"  v-model="${classname}.${column.attrname}" type="datetime" format="yyyy-MM-dd HH:mm:ss"   placeholder="请选择${column.columnComment}"
+						       		 	    style="width: 350px" ></el-date-picker>
+						       		  #elseif(${column.textType}=="file")
+						       		  #set($fileInit= "1")
+						       		 	<el-upload  :action="fileAction"  list-type="picture-card"  with-credentials="true"  
+				                              :disabled="!editable"
+				                              :file-list="fileList"
+				                              :on-success="handleFileSuccess"
+				                              :on-preview="handleFilePreview"
+				                              :on-change="handleFileChange"
+				                              :on-remove="handleRemove"
+				                              :on-error="handleError"
+				                              :before-upload="beforeFileUpload">
+				                              <i class="el-icon-plus"></i>
+				                              <div slot="tip" class="el-upload__tip">只能上传jpg/png/gif文件，且不超过2m</div>
+					                        </el-upload>
+					                        <el-dialog v-model="dialogVisible" size="small">
+					                           <img width="100%" :src="dialogImageUrl" alt="">
+					                        </el-dialog>
+					                        <input type="hidden"  v-model="${classname}.${column.attrname}" />
+					                  #elseif(${column.textType}=="radio")       
+					                        <el-radio-group  v-model="${classname}.${column.attrname}"  :disabled="!editable">
+										   	 <el-radio v-for="(value,key)  in ${column.attrname}Arr"  :label="key"  :value="key" >{{value}}</el-radio>
+									  		</el-radio-group>
+						       		 #else
+					       				<el-input  :disabled="!editable"  v-model="${classname}.${column.attrname}"   placeholder="${column.columnComment}"
+					       				  style="width: 350px" ></el-input>
+						       		 #end
+								</el-form-item>
+					       	#end
+                        #end
+                     #end   
+                      <el-form-item>
+					    <el-button id="save" type="primary"  @click="saveOrUpdate('${classname}Form')"   v-if="editable">确定</el-button>
+					    <el-button @click="reload">返回</el-button>
+					  </el-form-item>
+				</el-form>
+       </div>
+	</div>
+	 #if($fileInit=="1")
+	<el-dialog   :visible.sync="dialogVisibleView" size="tiny"   :show-close=false>
+	    <img width="100%" :src="dialogUrl" alt="">
+	    <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisibleView = false">关闭</el-button>
+        </div>
+	</el-dialog>
+	#end
+</div>
+
+<script type="text/javascript">   
+   var updateRight=false;
+   var deleteRight=false;
+   
+   $update
+       updateRight=true;
+   $end
+   $delete
+       deleteRight=true;
+   $end
+</script>
+#if($province != '' )
+<script type="text/javascript" src="${static_p}/js/common/city-2.0.js"></script>
+ #end
+<script src="${static_p}/js/${modulePath}${pathName}/${pathName}.js?v=${static_v}"></script>
+</body>
+</html>

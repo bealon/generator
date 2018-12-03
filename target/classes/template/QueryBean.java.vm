@@ -1,0 +1,83 @@
+package ${packageName}.bean${modulePackage};
+
+#foreach($pkg in $pkgTypeList)
+import $pkg;
+#end 
+
+#if($swaggerFlag)
+import io.swagger.annotations.ApiModelProperty;
+#end
+  
+import $superRequestClass;
+
+import java.io.Serializable;
+
+
+/**
+ * 
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public class Query${BeanName}Request extends BaseRequest implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    
+#foreach ($column in $columns)
+ #if($column.queryCol)
+     #if($swaggerFlag)
+        @ApiModelProperty(value="$column.columnComment",name="$column.propertyName")
+     #end     
+    private $column.javaDataType  $column.propertyName;
+  #if($column.queryModel.indexOf("8") != -1)
+    private $column.javaDataType  start${column.PropertyName};
+         
+    private $column.javaDataType end${column.PropertyName};
+  #end
+  #if($column.queryModel.indexOf("9") != -1)
+    private Set<$column.javaDataType> ${column.propertyName}Set;
+  #end
+ #end
+#end
+
+#foreach ($column in $columns)
+  #if($column.queryCol)
+    public $column.javaDataType get${column.PropertyName}() {
+        return $column.propertyName;
+    }
+    
+    public void set${column.PropertyName} ($column.javaDataType $column.propertyName) {
+        this.$column.propertyName = $column.propertyName;
+    }
+     
+   #if($column.queryModel.indexOf("8")!=-1)
+    public void setStart${column.PropertyName}( $column.javaDataType start$column.PropertyName ) {
+        this.start$column.PropertyName = start$column.PropertyName;
+    }
+
+    public $column.javaDataType getStart${column.PropertyName}() {
+        return start$column.PropertyName;
+    }
+    
+    public void setEnd${column.PropertyName}( $column.javaDataType end$column.PropertyName) {
+        this.end$column.PropertyName = end$column.PropertyName;
+    }
+
+    public $column.javaDataType getEnd${column.PropertyName}() {
+        return end$column.PropertyName;
+    }
+   #end
+
+  #if($column.queryModel.indexOf("9")!=-1)
+    public void set${column.PropertyName}Set ( Set<$column.javaDataType> ${column.propertyName}Set ) {
+        this.${column.propertyName}Set =${column.propertyName}Set;
+    }
+
+    public Set<$column.javaDataType> get${column.PropertyName}Set () {
+        return ${column.propertyName}Set;
+    }
+  #end     
+ #end   
+#end
+
+}

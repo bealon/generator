@@ -1,0 +1,36 @@
+package ${packageName}.common.enums;
+
+import com.polyman.common.base.bean.AppBizExcCodes;
+
+public enum AppExcCodesEnum implements AppBizExcCodes {
+	
+	KAPTCHA_ERROR("${projectName}.001","验证码有误"),
+
+    LOGIN_NAME_PASSWORD_ERROR("${projectName}.003","用户名或密码错误"),
+
+	LOGIN_NAME_LOCK("${projectName}.004","用户已锁定"),
+
+	STATUS_INVALID("${projectName}.005","状态无效"),
+
+	USER_NOT_EXIST("${projectName}.007","用户不存在");
+
+
+	private String code;
+	private String message;
+
+	private AppExcCodesEnum(String code, String message) {
+		this.code = code;
+		this.message = message;
+	}
+
+	@Override
+	public String getCode() {
+		return code;
+	}
+
+	@Override
+	public String getMessage() {
+		return message;
+	}
+
+}

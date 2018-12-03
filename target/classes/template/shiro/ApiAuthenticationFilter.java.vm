@@ -1,0 +1,98 @@
+package ${packageName}.common.shiro;
+
+import java.nio.charset.Charset;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.Subject;
+import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
+
+import com.alibaba.fastjson.JSON;
+import com.google.code.kaptcha.Constants;
+import com.polyman.common.base.bean.BizException;
+import com.polyman.common.base.enums.BaseExcCodesEnum;
+import com.polyman.common.base.session.SessUser;
+import com.polyman.common.base.shiro.ShiroRedisCache;
+import com.polyman.common.base.shiro.TestAuthenticationFilter;
+import com.polyman.common.base.utils.ResultBuilder;
+import ${packageName}.bean.LoginRequest;
+import ${packageName}.common.enums.AppExcCodesEnum;
+
+/**
+ * 
+ * @author bealon
+ *
+ */
+public class ApiAuthenticationFilter extends TestAuthenticationFilter {
+
+	private static final Logger log = LoggerFactory.getLogger(ApiAuthenticationFilter.class);
+
+	@Override
+	protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
+		//判断是否授权
+		Subject subject=SecurityUtils.getSubject();
+		if(!subject.isAuthenticated()){
+			if(isTestEnvironment()){
+				return true;
+			}
+			
+			response.setContentType("application/json");
+			response.setCharacterEncoding("utf-8");
+			
+			if (isLoginRequest(request, response)) {
+				String json =StreamUtils.copyToString(request.getInputStream(), Charset.forName("utf-8"));
+				LoginRequest loginRequest=JSON.parseObject(json, LoginRequest.class);
+				if(!StringUtils.hasLength(loginRequest.getUsername()) ||
+                        !StringUtils.hasLength(loginRequest.getPassword()) ||
+                        !StringUtils.hasLength(loginRequest.getCaptcha()) ){
+                    response.getWriter().write(JSON.toJSONString(ResultBuilder.buildResult(BaseExcCodesEnum.PARAS_NOT_NULL)));
+                    return false;
+                }
+				String kaptcha="";
+				try {
+					Session session=SecurityUtils.getSubject().getSession();
+					Object obj=session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
+					if(null != obj){
+						kaptcha=obj.toString();
+					}
+				}catch(Exception ex) {
+					ex.printStackTrace();
+				}
+				
+				if (!StringUtils.hasLength(loginRequest.getCaptcha()) || !loginRequest.getCaptcha().equalsIgnoreCase(kaptcha)) {
+					response.getWriter().write(JSON.toJSONString(ResultBuilder.buildResult(AppExcCodesEnum.KAPTCHA_ERROR)));
+				    return false;
+				}
+				UsernamePasswordToken token = new UsernamePasswordToken(loginRequest.getUsername(), loginRequest.getPassword(),false);
+				try {
+					subject.login(token);
+				} catch (AuthenticationException e) {
+					log.error("登录出错", e);
+					response.getWriter().write(JSON.toJSONString(ResultBuilder.buildResult(AppExcCodesEnum.LOGIN_NAME_PASSWORD_ERROR)));
+					return false;
+				}
+				
+				// 刷新权限
+				SessUser sessUser= (SessUser)SecurityUtils.getSubject().getPrincipal();
+				ShiroRedisCache<Object, Object> cache=(ShiroRedisCache<Object, Object>) ((DefaultWebSecurityManager)SecurityUtils.getSecurityManager()).getCacheManager().getCache(UserNamePassWordRealm.class.getName()+".authorizationCache");	
+				cache.remove(sessUser.getId());
+				response.getWriter().write(JSON.toJSONString(ResultBuilder.buildResult(ResultBuilder.SUCC_CODE, null, null)));
+				return true;
+	        } 
+			//不考虑重定向处理，如果采用hearder方式访问，重定向不会自动带上消息头。必须客户端处理。
+			response.getWriter().write(JSON.toJSONString(ResultBuilder.genExpResult(new BizException(BaseExcCodesEnum.SESSION_TIMEOUT))));
+			return false;
+		}
+		return true;
+	}
+
+}

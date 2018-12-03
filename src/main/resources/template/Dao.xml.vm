@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="${packageName}.dao${modulePackage}.${BeanName}Dao">
+
+    <resultMap type="${packageName}.model${modulePackage}.${BeanName}" id="${beanName}Map">
+      #foreach($column in $columns)
+        <result property="${column.propertyName}" column="${column.columnName}"/>
+      #end
+    </resultMap>
+    
+    
+    <sql id="sqlList" >
+       #foreach($column in $columns)
+          ${column.columnName} #if( $foreach.hasNext ),#end
+       #end
+    </sql>
+    
+     
+     <sql id="whereTest" >
+       <where>
+          #foreach($column in $columns) 
+              #if($column.queryModel.indexOf("8")!=-1)
+                <if test="start$column.PropertyName != null ">
+                   and `$column.columnName` &gt;= #{start$column.PropertyName}
+                </if>
+                <if test="end$column.PropertyName != null ">    
+                   and `$column.columnName` &lt;= #{end$column.PropertyName} 
+                 </if>
+              #elseif($column.queryModel.indexOf("9")!=-1)
+                 <if test="${column.propertyName}Set != null and ${column.propertyName}Set.size() > 0" >
+                    and `$column.columnName` in
+                    <foreach collection="${column.propertyName}Set" item="item" open="(" separator="," close=")">
+                         #{item}
+                    </foreach>
+                 </if>
+              #else       
+                  #if($column.javaDataType =='String')
+                       <if test="$column.propertyName != null and  $column.propertyName != '' ">
+                  #else
+                       <if test="$column.propertyName != null ">
+                  #end 
+                  #if($column.queryModel.indexOf("6")!=-1)
+                        and `$column.columnName`  like   concat('%',#{${column.propertyName}},'%')
+                  #elseif($column.queryModel.indexOf("7")!=-1)
+                         and `$column.columnName`  like concat('%',#{${column.propertyName}})
+                  #else
+                         and `$column.columnName` ${column.op} #{${column.propertyName}}    
+                  #end   
+                      </if>
+              #end        
+          #end
+        </where>  
+     </sql>
+     
+  
+	<select id="queryObject" resultMap="${beanName}Map">
+		select 
+		   <include refid="sqlList" />
+		from ${tableName} where ${pk} = #{value}
+	</select>
+	    
+
+	<select id="queryList" parameterType="java.util.Map" resultMap="${beanName}Map" >
+		select 
+              <include refid="sqlList" />
+		from ${tableName}
+       <include refid="whereTest" />
+        <choose>
+            <when test="order != null and order.trim() != ''">
+                order by ${order} ${sort}
+            </when>
+			<otherwise>
+                order by ${pk} desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" parameterType="java.util.Map" resultType="int">
+		select count(*) from ${tableName}
+        <include refid="whereTest" />
+	</select>
+	 
+	
+	<insert id="save" parameterType="${packageName}.model${modulePackage}.${BeanName}" #if($autoIncrement) useGeneratedKeys="true" keyProperty="$pk"#end>
+        insert into ${tableName}
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            #foreach($column in $columns)
+                #if($column.columnName != $pk || !$autoIncrement)
+                      #if($column.javaDataType =='String')
+                           <if test="$column.propertyName != null and  $column.propertyName != '' ">
+                      #else
+                           <if test="$column.propertyName != null ">
+                      #end 
+                          `$column.columnName`,
+                     </if>
+                #end            
+            #end
+         </trim>
+         <trim prefix="values (" suffix=")" suffixOverrides="," >
+             #foreach($column in $columns)
+                    #if($column.columnName != $pk || !$autoIncrement)
+                          #if($column.javaDataType =='String')
+                               <if test="$column.propertyName != null and  $column.propertyName != '' ">
+                          #else
+                               <if test="$column.propertyName != null ">
+                          #end 
+                              #{$column.propertyName},
+                         </if>
+                    #end            
+             #end
+         </trim>
+    </insert>
+    
+   <insert id="saveBatch"  parameterType="java.util.List">
+        insert into ${tableName} 
+          <trim prefix="(" suffix=")" suffixOverrides="," >
+            #foreach($column in $columns)
+               #if($column.columnName != $pk || !$autoIncrement)
+                  `$column.columnName`,
+               #end    
+            #end
+         </trim>
+         values
+            <foreach collection="list" item="item" index="index" separator="," >
+             <trim prefix="(" suffix=")" suffixOverrides="," >
+                #foreach($column in $columns)
+                    #if($column.columnName != $pk || !$autoIncrement)
+                       #{item.$column.propertyName},
+                    #end    
+                #end
+             </trim>
+           </foreach>
+   </insert>
+	 
+	
+	<update id="update" parameterType="${packageName}.model${modulePackage}.${BeanName}">
+        update ${tableName} 
+        <set>
+        #foreach($column in $columns)
+            #if($column.columnKey == '1')
+                #set($pkPropertyName=$column.propertyName)
+            #else
+                <if test="$column.propertyName != null">
+                    `$column.columnName` = #{$column.propertyName},
+                </if>
+            #end
+        #end
+        </set>
+        where ${pk} = #{${pkPropertyName}}
+    </update>
+	
+	<delete id="delete">
+		delete from ${tableName} where ${pk} = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from ${tableName} where ${pk} in 
+		<foreach item="item" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+</mapper>

@@ -1,0 +1,3 @@
+#仅在多个项目的时候，并且项目在源码关闭的情况下有效。因为热部署导致类加载器不一样导致类无法转换。
+restart.exclude.${projectName}api=/${apiModuleName}-[\\w-]+\.jar
+restart.exclude.commonbase=/common-base-[\\w-]+\.jar

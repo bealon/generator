@@ -1,0 +1,202 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigBean",
+      "name": "generator.config",
+      "type": "com.polyman.common.generator.config.ConfigBean"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigTabelPolicyBean",
+      "name": "generator.tabelPolicy",
+      "type": "com.polyman.common.generator.config.ConfigTabelPolicyBean"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigTemplateBean",
+      "name": "generator.template",
+      "type": "com.polyman.common.generator.config.ConfigTemplateBean"
+    }
+  ],
+  "properties": [
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigBean",
+      "name": "generator.config.api-module-name",
+      "description": "接口模块名称",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigBean",
+      "name": "generator.config.author",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigBean",
+      "name": "generator.config.biz-exception-path",
+      "description": "自定义业务异常类",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigBean",
+      "name": "generator.config.db-type",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigBean",
+      "name": "generator.config.email",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigBean",
+      "name": "generator.config.file-directory",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigBean",
+      "name": "generator.config.package-name",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigBean",
+      "name": "generator.config.parent-module-name",
+      "description": "父模块名称",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigBean",
+      "name": "generator.config.project-name",
+      "description": "项目打包名称",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigBean",
+      "name": "generator.config.shiro-flag",
+      "description": "shiro 标志",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigBean",
+      "name": "generator.config.srv-module-name",
+      "description": "实现模块名称",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigBean",
+      "name": "generator.config.super-controller-class",
+      "description": "自定义继承的Controller类全称，带包名",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigBean",
+      "name": "generator.config.super-dao-class",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigBean",
+      "name": "generator.config.super-request-class",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigBean",
+      "name": "generator.config.swagger-flag",
+      "description": "swagger 标志",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigBean",
+      "name": "generator.config.version",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigBean",
+      "name": "generator.config.web-module-name",
+      "description": "web层模块名称",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigTabelPolicyBean",
+      "name": "generator.tabelPolicy.allowed-tables",
+      "type": "java.util.List<java.lang.String>"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigTabelPolicyBean",
+      "name": "generator.tabelPolicy.col-naming-strategy",
+      "type": "com.polyman.common.generator.utils.NamingStrategy"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigTabelPolicyBean",
+      "name": "generator.tabelPolicy.has-moudule",
+      "description": "是否有模块，看表的命名规则。如果是下划线方式，取第一个下划线之前字符串。如果是驼峰方式，取第一个大写字母之前的字符串。\n 否则没有模块",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigTabelPolicyBean",
+      "name": "generator.tabelPolicy.refuse-tables",
+      "type": "java.util.List<java.lang.String>"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigTabelPolicyBean",
+      "name": "generator.tabelPolicy.table-naming-strategy",
+      "type": "com.polyman.common.generator.utils.NamingStrategy"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigTabelPolicyBean",
+      "name": "generator.tabelPolicy.table-schema",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigTemplateBean",
+      "name": "generator.template.add-request-template",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigTemplateBean",
+      "name": "generator.template.controller-template",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigTemplateBean",
+      "name": "generator.template.dao-template",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigTemplateBean",
+      "name": "generator.template.main-template",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigTemplateBean",
+      "name": "generator.template.model-template",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigTemplateBean",
+      "name": "generator.template.query-request-template",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigTemplateBean",
+      "name": "generator.template.service-impl-template",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigTemplateBean",
+      "name": "generator.template.service-template",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigTemplateBean",
+      "name": "generator.template.update-request-template",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigTemplateBean",
+      "name": "generator.template.view-template",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.polyman.common.generator.config.ConfigTemplateBean",
+      "name": "generator.template.xml-template",
+      "type": "java.lang.Boolean"
+    }
+  ]
+}

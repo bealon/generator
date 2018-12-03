@@ -1,0 +1,51 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>${packageName}</groupId>
+	<artifactId>${parentModuleName}</artifactId>
+	<version>${version}</version>
+	<packaging>pom</packaging>
+
+	<parent>
+		<groupId>com.polyman.pom</groupId>
+		<artifactId>pom.root</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<modules>
+		<module>${apiModuleName}</module>
+		<module>${srvModuleName}</module>
+		<module>${webModuleName}</module>
+	</modules>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.polyman.common</groupId>
+			<artifactId>common-base</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+		#if($shiroFlag)
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-spring</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-spring-boot-web-starter</artifactId>
+        </dependency>
+        #end
+		
+		<dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+        
+	</dependencies>
+</project>

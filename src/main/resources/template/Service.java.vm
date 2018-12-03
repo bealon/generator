@@ -1,0 +1,32 @@
+package ${packageName}.service${modulePackage};
+
+import ${bizExceptionPath};
+import ${packageName}.bean${modulePackage}.Add${BeanName}Request;
+import ${packageName}.bean${modulePackage}.Query${BeanName}Request;
+import ${packageName}.bean${modulePackage}.Update${BeanName}Request;
+import ${packageName}.view${modulePackage}.${BeanName}Bean;
+
+import java.util.List;
+/**
+ * ${comments}
+ * 
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public interface ${BeanName}Service {
+
+	${BeanName}Bean query${BeanName} (Object id) throws ${bizExceptionName};
+	
+    List<${BeanName}Bean> queryList(Query${BeanName}Request request) throws ${bizExceptionName};
+    
+    int queryTotal(Query${BeanName}Request request) throws ${bizExceptionName};
+    
+    int save(Add${BeanName}Request request) throws ${bizExceptionName};
+    
+    int update(Update${BeanName}Request request) throws ${bizExceptionName};
+        
+    int delete(Object id) throws ${bizExceptionName};
+    
+    int deleteBatch(Object[] ids) throws ${bizExceptionName};
+}

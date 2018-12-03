@@ -1,0 +1,55 @@
+package ${packageName}.bean${modulePackage};
+
+#foreach($pkg in $pkgList)
+import $pkg;
+#end  
+#foreach($pkg in $pkgTypeList)
+import $pkg;
+#end 
+
+
+#if($swaggerFlag)
+import io.swagger.annotations.ApiModelProperty;
+#end
+
+import java.io.Serializable;
+
+
+/**
+ * 
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public class Add${BeanName}Request  implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+#foreach ($column in $columns)
+    #if($column.addCol)
+    #if($column.columnName != $pk)
+     #if($swaggerFlag)
+        @ApiModelProperty(value="$column.columnComment",name="$column.propertyName")
+     #end
+    #foreach($annotation in $column.annotationList)
+     $annotation
+    #end 
+     private $column.javaDataType $column.propertyName;
+    #end
+    #end
+#end
+
+#foreach ($column in $columns)
+  #if($column.addCol)
+    #if($column.columnName != $pk)
+    public $column.javaDataType get${column.PropertyName}() {
+        return $column.propertyName;
+    }
+    
+	public void set${column.PropertyName} ($column.javaDataType $column.propertyName) {
+		this.$column.propertyName = $column.propertyName;
+	}
+	#end
+  #end	
+#end
+}

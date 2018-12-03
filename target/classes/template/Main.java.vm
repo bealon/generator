@@ -1,0 +1,22 @@
+package ${packageName};
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+
+@SpringBootApplication
+public class ${ProjectName}WebApplication extends SpringBootServletInitializer{
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(${ProjectName}WebApplication.class);
+    }
+    
+    
+    public static void main(String[] args) {
+        ConfigurableApplicationContext context=SpringApplication.run(${ProjectName}WebApplication.class, args);
+        System.out.println("run");
+    }
+}

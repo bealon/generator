@@ -1,0 +1,14 @@
+static_v=1.0.6
+static_p=
+
+spring.http.encoding.force=true
+spring.http.encoding.charset=UTF-8
+spring.http.encoding.enabled=true
+server.tomcat.uri-encoding=UTF-8
+
+
+mybatis.type-aliases-package=${packageName}.model,${packageName}.view
+mybatis.mapper-locations=classpath:mybatis/*/*.xml
+
+
+spring.profiles.active=@activatedProperties@

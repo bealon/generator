@@ -1,0 +1,39 @@
+
+
+spring.redis.host = upay.redisServer.3g
+spring.redis.port = 6379
+spring.redis.database=10
+spring.http.converters.preferred-json-mapper=gson
+
+server.context-path=/${projectName}
+server.port=80
+
+
+
+
+spring.datasource.type=com.alibaba.druid.pool.DruidDataSource
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+spring.datasource.url=${datasourceUrl}
+spring.datasource.username=${datasourceUsername}
+spring.datasource.password=${datasourcePassword}
+
+
+spring.datasource.initialSize=5
+spring.datasource.minIdle=5
+spring.datasource.maxActive=20
+spring.datasource.maxWait=60000
+spring.datasource.timeBetweenEvictionRunsMillis=60000
+spring.datasource.minEvictableIdleTimeMillis=300000
+spring.datasource.validationQuery=SELECT 1 FROM DUAL
+spring.datasource.testWhileIdle=true
+spring.datasource.testOnBorrow=false
+spring.datasource.testOnReturn=false
+
+
+#if($shiroFlag)
+app.testEnvironment=false
+#end
+
+
+
+

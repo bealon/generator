@@ -1,0 +1,99 @@
+package ${packageName}.service${modulePackage}.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Map;
+
+import com.alibaba.fastjson.JSON;
+import com.polyman.common.base.utils.BeanUtil;
+import com.polyman.common.base.enums.BaseExcCodesEnum;
+
+import ${bizExceptionPath};
+import ${packageName}.service${modulePackage}.${BeanName}Service;
+import ${packageName}.bean${modulePackage}.Add${BeanName}Request;
+import ${packageName}.bean${modulePackage}.Query${BeanName}Request;
+import ${packageName}.bean${modulePackage}.Update${BeanName}Request;
+import ${packageName}.view${modulePackage}.${BeanName}Bean;
+import ${packageName}.model${modulePackage}.${BeanName};
+import ${packageName}.dao${modulePackage}.${BeanName}Dao;
+
+
+
+@Service("${beanName}Service")
+public class ${BeanName}ServiceImpl implements ${BeanName}Service {
+
+
+    private static final Logger logger = LoggerFactory.getLogger(${BeanName}ServiceImpl.class);
+    
+    @Autowired
+    protected ${BeanName}Dao ${beanName}Dao;
+    
+        
+    public ${BeanName}Bean query${BeanName} (Object id) throws ${bizExceptionName}{
+         logger.info("${BeanName}ServiceImpl queryViewBean id={}",id);
+         ${BeanName} ${beanName}=${beanName}Dao.queryObject(id);
+         ${BeanName}Bean ${beanName}Bean=new ${BeanName}Bean();
+         BeanUtil.copyProperties(${beanName}, ${beanName}Bean);
+         return ${beanName}Bean;
+     }
+
+    @Override
+    public List<${BeanName}Bean> queryList(Query${BeanName}Request queryRequest) throws ${bizExceptionName} {
+        logger.info("${BeanName}ServiceImpl queryList queryRequest={}",JSON.toJSON(queryRequest));
+        Map<String, Object> map=BeanUtil.asMap(queryRequest);
+        map.put("offset",queryRequest.getPageSize() * (queryRequest.getPageNo() - 1));
+        map.put("limit", queryRequest.getPageSize());
+        List<${BeanName}>  list=${beanName}Dao.queryList(map);
+        
+        List<${BeanName}Bean> resultList=BeanUtil.copyList(list,${BeanName}Bean.class);
+        
+        return resultList;
+    }
+
+    @Override
+    public int queryTotal(Query${BeanName}Request queryRequest) throws ${bizExceptionName} {
+        logger.info("queryTotal queryRequest={}",JSON.toJSON(queryRequest));
+        Map<String, Object> map=BeanUtil.asMap(queryRequest);
+        return ${beanName}Dao.queryTotal(map); 
+    }
+
+    @Override
+    @Transactional(rollbackFor=Exception.class)
+    public int save(Add${BeanName}Request addRequest) throws ${bizExceptionName} {
+        logger.info("${BeanName}ServiceImpl save request={}",JSON.toJSON(addRequest));
+        ${BeanName} ${beanName} =new ${BeanName}();
+        BeanUtil.copyProperties(addRequest, ${beanName});
+        return ${beanName}Dao.save(${beanName});     
+    }
+
+    @Override
+    @Transactional(rollbackFor=Exception.class)
+    public int update(Update${BeanName}Request updateRequest) throws ${bizExceptionName} {
+        logger.info("${BeanName}ServiceImpl update request={}",JSON.toJSON(updateRequest));
+        ${BeanName} ${beanName}=${beanName}Dao.queryObject(updateRequest.getId());
+        if(null == ${beanName}){
+           throw new ${bizExceptionName}(BaseExcCodesEnum.ENTITY_NOT_EXISTS,new Object[]{"${beanName}"});
+        }
+        BeanUtil.copyProperties(updateRequest, ${beanName});
+        return ${beanName}Dao.update( ${beanName});
+    }
+
+    @Override
+    @Transactional(rollbackFor=Exception.class)
+    public int delete(Object id) throws ${bizExceptionName} {
+        logger.info("${BeanName}ServiceImpl delete id={}",id);
+        return ${beanName}Dao.delete(id);
+    }
+
+    @Override
+    @Transactional(rollbackFor=Exception.class)
+    public int deleteBatch(Object[] ids) throws ${bizExceptionName} {
+        logger.info("${BeanName}ServiceImpl deleteBatch ids={}",ids);
+        return ${beanName}Dao.deleteBatch(ids);
+    }
+}

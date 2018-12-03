@@ -1,0 +1,84 @@
+package ${packageName}.config;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.GsonHttpMessageConverter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.alibaba.fastjson.support.config.FastJsonConfig;
+import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+
+#if($swaggerFlag)
+import springfox.documentation.spring.web.json.Json;
+#end
+
+@Configuration
+public class WebAppConfig extends WebMvcConfigurerAdapter {
+
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/**")
+				// .allowedOrigins("http://192.168.1.97")
+				.allowedOrigins("*").allowedMethods("GET", "POST").allowedHeaders("*").allowCredentials(true)
+				.maxAge(3600);
+	}
+
+
+	@Override
+	public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+		converters.add(fastJsonHttpMessageConverter());
+	}
+
+	@Bean
+	public FastJsonHttpMessageConverter fastJsonHttpMessageConverter() {
+		FastJsonHttpMessageConverter fastConverter = new FastJsonHttpMessageConverter();
+		FastJsonConfig fastJsonConfig = new FastJsonConfig();
+		fastJsonConfig.setSerializerFeatures(
+				SerializerFeature.PrettyFormat, 
+				SerializerFeature.WriteNullStringAsEmpty, 
+		        SerializerFeature.WriteNullListAsEmpty,
+		        SerializerFeature.WriteMapNullValue,
+		        SerializerFeature.WriteDateUseDateFormat,
+		        SerializerFeature.WriteNullBooleanAsFalse
+				);
+		// 处理中文乱码问题
+		List<MediaType> fastMediaTypes = new ArrayList<>();
+		fastMediaTypes.add(MediaType.APPLICATION_JSON_UTF8);
+		fastConverter.setSupportedMediaTypes(fastMediaTypes);
+
+		fastConverter.setSupportedMediaTypes(fastMediaTypes);
+		fastConverter.setFastJsonConfig(fastJsonConfig);
+		return fastConverter;
+	}
+
+#if($swaggerFlag)
+	@Bean
+	public GsonHttpMessageConverter gsonHttpMessageConverter() {
+		GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
+		converter.setGson(new GsonBuilder().serializeNulls().setDateFormat("yyyy-MM-dd HH:mm:ss")
+				.registerTypeAdapter(Json.class, new SpringfoxJsonToGsonAdapter()).create());
+		return converter;
+	}
+   // 使用gson格式时候，会报错。
+	class SpringfoxJsonToGsonAdapter implements JsonSerializer<Json> {
+		@Override
+		public JsonElement serialize(Json src, Type typeOfSrc, JsonSerializationContext context) {
+			final JsonParser parser = new JsonParser();
+			return parser.parse(src.value());
+		}
+	}
+#end
+}

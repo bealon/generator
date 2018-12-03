@@ -1,0 +1,39 @@
+package ${packageName}.model${modulePackage};
+
+#foreach($pkg in $pkgTypeList)
+import $pkg;
+#end  
+
+import java.io.Serializable;
+
+
+/**
+ * ${comments}
+ * 
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public class ${BeanName} implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+
+	
+#foreach ($column in $columns)
+	 /**
+	 *$column.columnComment
+	 */
+	 private $column.javaDataType $column.propertyName;
+#end
+
+#foreach ($column in $columns)
+
+    public $column.javaDataType get${column.PropertyName}() {
+        return $column.propertyName;
+    }
+    
+    public void set${column.PropertyName} ($column.javaDataType $column.propertyName) {
+        this.$column.propertyName = $column.propertyName;
+    }
+#end
+}
